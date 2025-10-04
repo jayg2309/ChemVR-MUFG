@@ -22,39 +22,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Setup Node.js
+    - name: Setup Node.js and pnpm
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'pnpm'
     
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v3
-      with:
-        version: ${{ env.PNPM_VERSION }}
-        run_install: true
-    
-    - name: Setup pnpm cache
-      uses: actions/cache@v4
-      id: pnpm-cache
-      with:
-        path: |
-          ~/.pnpm-store
-          ~/Library/pnpm/store
-          /opt/hostedtoolcache/pnpm
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-pnpm-store-
-    
-    # Cache Next.js build and dependencies
-    - name: Cache Next.js build
-      uses: actions/cache@v3
-      with:
-        path: |
-          node_modules/.cache
-        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-nextjs-
+    - name: Install pnpm
+      run: npm install -g pnpm@8
     
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
