@@ -32,17 +32,16 @@ jobs:
       uses: pnpm/action-setup@v3
       with:
         version: ${{ env.PNPM_VERSION }}
-        run_install: false
-    
-    - name: Get pnpm store directory
-      shell: bash
-      run: |
-        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+        run_install: true
     
     - name: Setup pnpm cache
       uses: actions/cache@v4
+      id: pnpm-cache
       with:
-        path: ${{ env.STORE_PATH }}
+        path: |
+          ~/.pnpm-store
+          ~/Library/pnpm/store
+          /opt/hostedtoolcache/pnpm
         key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
           ${{ runner.os }}-pnpm-store-
@@ -89,6 +88,5 @@ jobs:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        vercel-args: '--prod'
+        vercel-args: '--prod --confirm'
         working-directory: './'
-        vercel-extra-args: '--confirm'
