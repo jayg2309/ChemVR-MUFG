@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.vscode
+.env.local
+.env.development
+.env.test
+.env.production
+Dockerfile
+.dockerignore
+k8s/
+ansible/

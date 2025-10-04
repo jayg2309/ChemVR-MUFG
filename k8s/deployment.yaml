@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chemvr
+  namespace: chemvr
+  labels:
+    app: chemvr
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: chemvr
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: chemvr
+        version: "1.0.0"
+    spec:
+      containers:
+      - name: chemvr
+        image: yourusername/chemvr:1.0.0
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: chemvr-config
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
