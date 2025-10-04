@@ -72,7 +72,7 @@ jobs:
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: 'jaygondaliya2309-gmailcoms-projects'
-        vercel-project-id: 'chemvr-mufg'
+        vercel-org-id: 'team_lfhy8hzoCnY3j3abRc0nGlHS'
+        vercel-project-id: 'prj_jn6cfeEeBTUGTbSIyvLQITUjL2G1'
         vercel-args: '--prod --confirm'
         working-directory: './'
