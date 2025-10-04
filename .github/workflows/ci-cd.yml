@@ -51,7 +51,6 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          .next/cache
           node_modules/.cache
         key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
@@ -64,7 +63,7 @@ jobs:
       run: pnpm lint
     
     - name: Type check
-      run: pnpm tsc --noEmit
+      run: pnpm type-check
     
     - name: Build
       run: pnpm build
