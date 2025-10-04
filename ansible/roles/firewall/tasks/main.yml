@@ -1,0 +1,32 @@
+---
+- name: Install UFW
+  apt:
+    name: ufw
+    state: present
+
+- name: Allow SSH
+  ufw:
+    rule: allow
+    port: 22
+    proto: tcp
+
+- name: Allow application port
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  with_items: "{{ firewall_allowed_ports }}"
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny
+
+- name: Check UFW status
+  command: ufw status verbose
+  register: ufw_status
+  changed_when: false
+
+- name: Display UFW status
+  debug:
+    msg: "{{ ufw_status.stdout_lines }}"

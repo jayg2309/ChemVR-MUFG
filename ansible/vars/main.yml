@@ -1,0 +1,32 @@
+---
+# System User Configuration
+app_user: chemvr
+app_group: "{{ app_user }}"
+app_home: "/home/{{ app_user }}"
+app_dir: "/opt/{{ app_user }}"
+
+# Node.js Configuration
+nodejs_version: "18.x"
+
+# Application Configuration
+app_port: 3000
+app_env:
+  NODE_ENV: production
+  PORT: "{{ app_port }}"
+  # Add other environment variables here
+
+# System Packages
+system_packages:
+  - git
+  - curl
+  - wget
+  - unzip
+  - make
+  - build-essential
+  - python3-pip
+  - python3-setuptools
+
+# Firewall Configuration
+firewall_allowed_ports:
+  - "{{ app_port }}"  # Application port
+  - "22"              # SSH

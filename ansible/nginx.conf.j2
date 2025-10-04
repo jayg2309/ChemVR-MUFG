@@ -1,0 +1,28 @@
+server {
+    listen 80;
+    server_name your_domain_or_ip;
+    root /var/www/{{ app_name }}/.next/standalone;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /_next/static {
+        alias /var/www/{{ app_name }}/.next/static;
+        expires 365d;
+        access_log off;
+    }
+
+    location /public {
+        alias /var/www/{{ app_name }}/public;
+        expires 30d;
+        access_log off;
+    }
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+}

@@ -1,0 +1,53 @@
+---
+- name: Clone the repository
+  git:
+    repo: https://github.com/yourusername/ChemVR-MUFG.git
+    dest: "{{ app_dir }}"
+    version: main  # or your branch name
+    force: yes
+  become_user: "{{ app_user }}"
+  register: repo_cloned
+  retries: 3
+  delay: 10
+  until: repo_cloned is succeeded
+
+- name: Install dependencies with pnpm
+  command: pnpm install --prod
+  args:
+    chdir: "{{ app_dir }}"
+  become_user: "{{ app_user }}"
+  environment:
+    NODE_ENV: production
+
+- name: Create .env file
+  template:
+    src: env.j2
+    dest: "{{ app_dir }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0600'
+
+- name: Build the application
+  command: pnpm run build
+  args:
+    chdir: "{{ app_dir }}"
+  become_user: "{{ app_user }}"
+  environment:
+    NODE_ENV: production
+
+- name: Create systemd service file
+  template:
+    src: chemvr.service.j2
+    dest: /etc/systemd/system/chemvr.service
+    mode: '0644'
+  register: service_created
+  notify:
+    - reload systemd
+    - restart chemvr
+
+- name: Enable and start chemvr service
+  systemd:
+    name: chemvr
+    state: started
+    enabled: yes
+    daemon_reload: yes

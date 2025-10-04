@@ -1,0 +1,59 @@
+---
+- name: Deploy ChemVR Frontend
+  hosts: web
+  become: true
+  
+  tasks:
+    - name: Update package index
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name: ["nginx", "nodejs", "npm", "git"]
+        state: present
+
+    - name: Install pnpm
+      command: npm install -g pnpm
+
+    - name: Create application directory
+      file:
+        path: "/var/www/{{ app_name }}"
+        state: directory
+        mode: '0755'
+
+    - name: Clone the repository
+      git:
+        repo: "https://github.com/yourusername/ChemVR-MUFG.git"
+        dest: "/var/www/{{ app_name }}"
+        version: main
+
+    - name: Install dependencies
+      command: pnpm install
+      args:
+        chdir: "/var/www/{{ app_name }}"
+
+    - name: Build the application
+      command: pnpm run build
+      args:
+        chdir: "/var/www/{{ app_name }}"
+
+    - name: Configure Nginx
+      template:
+        src: nginx.conf.j2
+        dest: "/etc/nginx/sites-available/{{ app_name }}"
+      notify: restart nginx
+
+    - name: Enable Nginx site
+      file:
+        src: "/etc/nginx/sites-available/{{ app_name }}"
+        dest: "/etc/nginx/sites-enabled/{{ app_name }}"
+        state: link
+      notify: restart nginx
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted

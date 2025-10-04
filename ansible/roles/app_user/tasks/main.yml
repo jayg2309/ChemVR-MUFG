@@ -1,0 +1,37 @@
+---
+- name: Create application group
+  group:
+    name: "{{ app_group }}"
+    state: present
+
+- name: Create application user
+  user:
+    name: "{{ app_user }}"
+    group: "{{ app_group }}"
+    shell: /bin/bash
+    home: "{{ app_home }}"
+    create_home: yes
+    system: no
+
+- name: Create application directory
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+
+- name: Set up .ssh directory
+  file:
+    path: "{{ app_home }}/.ssh"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0700'
+
+- name: Add authorized key for deployment
+  authorized_key:
+    user: "{{ app_user }}"
+    key: "{{ lookup('file', 'files/deploy_key.pub') }}"
+    state: present
+  when: lookup('file', 'files/deploy_key.pub', errors='ignore') != ''

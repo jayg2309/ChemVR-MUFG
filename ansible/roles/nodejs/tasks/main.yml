@@ -1,0 +1,28 @@
+---
+- name: Add NodeSource repository
+  shell: |
+    curl -fsSL https://deb.nodesource.com/setup_{{ nodejs_version }} | bash -
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: Install Node.js and npm
+  apt:
+    name:
+      - nodejs
+    state: present
+    update_cache: yes
+
+- name: Install pnpm
+  shell: |
+    npm install -g pnpm
+  args:
+    creates: /usr/local/bin/pnpm
+
+- name: Verify Node.js and npm installation
+  command: node --version
+  register: node_version
+  changed_when: false
+
+- name: Display Node.js version
+  debug:
+    msg: "Node.js {{ node_version.stdout }} installed"

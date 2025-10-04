@@ -1,0 +1,19 @@
+---
+- name: Update apt package index
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install system packages
+  apt:
+    name: "{{ system_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Set timezone
+  timezone:
+    name: UTC
+
+- name: Enable UTC time
+  command: timedatectl set-local-rtc 0 --adjust-system-clock
+  when: ansible_os_family == 'Debian'
